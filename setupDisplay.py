@@ -11,5 +11,5 @@ outval_reg = re.search(reg_pat,outval)
 displVal = outval_reg.group()
 displVal = f"{displVal}1:0"
 print(displVal)
-
-os.environ['DISPLAY'] = displVal
+with open('.disp_ip','w') as dipf:
+    dipf.write(displVal)
