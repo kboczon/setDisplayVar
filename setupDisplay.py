@@ -1,5 +1,6 @@
 import subprocess
 import re
+import os
 
 eth0ip = subprocess.Popen(['ip', 'a'], stdout=subprocess.PIPE)
 eth0grep = subprocess.Popen(['grep','eth0'], stdin=eth0ip.stdout, stdout=subprocess.PIPE)
@@ -11,4 +12,4 @@ displVal = outval_reg.group()
 displVal = f"{displVal}1:0"
 print(displVal)
 
-subprocess.run(['export', displVal])
+os.environ['DISPLAY'] = displVal
