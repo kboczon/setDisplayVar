@@ -11,52 +11,43 @@ outval = eth0inet.communicate()[0].decode('utf8')
 reg_pat=r"(\d{1,3})"
 outip_reg = re.search(reg_pat,outval)
 octets = re.findall(reg_pat,outval)
-
+# Convert ip octets to int
 x = 0
 for each in octets:
     octets[x] = int(each)
     x += 1
 
-def calNet(octet,mask):
-    mask = 256 - 2 ** mask
-    return octet & mask
+lookup_subnet = [0,128,192,224,240,248,252,254,255]
 
-network = 0
-sw_octed = 0
-if octets[4] < 9:
-    val = octets[0]
-    mask = octets[4]
-    network = calNet(val, mask)
-    sw_octed = 0
-elif octets[4] < 17:
-    val = octets[1]
-    mask = octets[4] - 8
-    network = calNet(val,mask)
-    sw_octed = 1
-elif octets[4] < 25:
-    val = octets[2]
-    mask = octets[4] - 16
-    network = calNet(val,mask)
-    sw_octed = 2
-else:
-    val = octets[3]
-    mask = octets[4] - 24
-    network = calNet(val,mask)
-    sw_octed = 3
 
-rebuild_ip = ""
-x = 0
-for each in octets:
-    if x == sw_octed:
-        rebuild_ip = str(rebuild_ip) + str(network)
+octets_subnet = []
+network_short = int(octets[4])
+x = network_short
+while x > 0:
+    if x >= 8:
+        octets_subnet.append(255)
+        x = x - 8
     else:
-        rebuild_ip = rebuild_ip + str(octets[x])
-    rebuild_ip = rebuild_ip + "."
-    x = x + 1
-    if x == 3:
-        break
+        octets_subnet.append(lookup_subnet[x])
+        x = x - x
+        while len(octets_subnet) < 4:
+            octets_subnet.append(lookup_subnet[x])
 
-displVal = f"{rebuild_ip}1:0"
-print(displVal)
+
+octets_network = []
+for each in range(0,4):
+    val = octets[each] & octets_subnet[each]
+    octets_network.append(val)
+
+gateway_ip = ""
+for x in range(0,4):
+    if x == 3:
+        gateway_ip = f"{gateway_ip}.{octets_network[x] + 1}"
+    elif x == 0:
+        gateway_ip = f"{octets_network[x]}"
+    else:
+        gateway_ip = f"{gateway_ip}.{octets_network[x]}"
+#displVal = f"{rebuild_ip}1:0"
+print(gateway_ip)
 with open('.disp_ip','w') as dipf:
-    dipf.write(displVal)
+    dipf.write(gateway_ip)
