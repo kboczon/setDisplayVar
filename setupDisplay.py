@@ -47,6 +47,7 @@ for x in range(0,4):
         gateway_ip = f"{octets_network[x]}"
     else:
         gateway_ip = f"{gateway_ip}.{octets_network[x]}"
+gateway_ip = f"{gateway_ip}:0"
 #displVal = f"{rebuild_ip}1:0"
 print(gateway_ip)
 with open('.disp_ip','w') as dipf:
