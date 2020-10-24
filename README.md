@@ -3,5 +3,6 @@ Are you using WSL, X applications and are too lazy to set up our own solution to
 Put it in your home folder and add the following to .bashrc
 
 
-~/.setupDisplay.bin > ~/.disp_ip
+python3 ~/.setupDisplay.py > ~/.disp_ip
+
 export DISPLAY=`cat ~/.disp_ip`
